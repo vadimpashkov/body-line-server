@@ -20,11 +20,14 @@ namespace Domain.UseCases.Queries.Record
         {
             var currentUser = await _mediator.Send(new GetCurrentUserInput());
 
-            if (currentUser.Roles.Contains(Enums.UserRole.Employee)) 
+            if (currentUser.Roles.Contains(Enums.UserRole.Employee))
             {
-                return query.Where(x => x.Messeur.UserId == currentUser.Id);
+                return query
+                  .Where(x => x.Messeur.UserId == currentUser.Id)
+                  .Where(x => !x.Cancelled);
             }
-            return query;
+            return query
+                  .Where(x => !x.Cancelled);
         }
     }
 }
