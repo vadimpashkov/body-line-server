@@ -25,6 +25,16 @@ namespace Domain.UseCases.Record.Create
         {
             var currentUser = await _mediator.Send(new GetCurrentUserInput());
 
+            var anyRecord = await _context.Records.AnyAsync(x =>
+              x.Date == request.Date
+              && x.MesseurId == request.MesseurId
+              && !x.Cancelled
+            );
+
+            if (anyRecord) {
+              return ActionOutput.Failure("Данный мастер занят. Пожалуйста, выберите другого мастера или другое время посещения");
+            }
+
             var record = new Domain.Entities.Record
             {
                 UserId = currentUser.Id,
